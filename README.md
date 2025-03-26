@@ -29,7 +29,7 @@
 - **요청 본문 예시:**
 ```JSON
 {
-  "id": "user123",
+  "username": "user123",
   "password": "password123",
   "passwordConfirm": "password123",
   "name": "홍길동",
@@ -44,7 +44,7 @@
 - **요청 본문 예시:**
 ```json
 {
-  "id": "user123",
+  "username": "user123",
   "password": "password123"
 }
 ```
@@ -72,7 +72,7 @@
 ```JSON
 {
   "user": {
-    "id": "user123",
+    "username": "user123",
     "name": "홍길동"
   },
   "message": "로그인 성공"

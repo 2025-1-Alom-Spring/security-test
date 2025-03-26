@@ -33,12 +33,12 @@ function App() {
     });
 
     const [loginData, setLoginData] = useState({
-        id: '',
+        username: '',
         password: ''
     });
 
     const [signupData, setSignupData] = useState({
-        id: '',
+        username: '',
         password: '',
         passwordConfirm: '',
         name: '',
@@ -67,8 +67,8 @@ function App() {
     };
 
     const handleLogin = async () => {
-        const { id, password } = loginData;
-        if (!id || !password) {
+        const { username, password } = loginData;
+        if (!username || !password) {
             setResultMessage({ message: '아이디와 비밀번호를 모두 입력해주세요.', type: 'error' });
             return;
         }
@@ -76,7 +76,7 @@ function App() {
             const response = await login(loginData);
             if (response.user) {
                 setUser(response.user);
-                setResultMessage({ message: `로그인 성공: ${response.user.name} (${response.user.id})`, type: 'success' });
+                setResultMessage({ message: `로그인 성공: ${response.user.name} (${response.user.username})`, type: 'success' });
             } else {
                 setResultMessage({ message: '로그인 성공했지만, 유저 정보를 확인할 수 없습니다.', type: 'error' });
             }
@@ -93,8 +93,8 @@ function App() {
     };
 
     const handleSignup = async () => {
-        const { id, password, passwordConfirm, name, email } = signupData;
-        if (!id || !password || !passwordConfirm || !name || !email) {
+        const { username, password, passwordConfirm, name, email } = signupData;
+        if (!username || !password || !passwordConfirm || !name || !email) {
             setResultMessage({ message: '모든 필드를 입력해주세요.', type: 'error' });
             return;
         }
@@ -111,14 +111,22 @@ function App() {
 
         try {
             const response = await register(signupData);
-            setResultMessage({
+            if (response.status === 200){
+              setResultMessage({
                 message: `회원가입 성공: ${response.message || '회원가입이 완료되었습니다.'}`,
                 type: 'success'
-            });
-            // 2초 후 로그인 폼으로 전환
-            setTimeout(() => {
+              });
+              // 2초 후 로그인 폼으로 전환
+              setTimeout(() => {
                 toggleForms();
-            }, 2000);
+              }, 2000);
+            }
+            else if (response.status === 409) {
+              setResultMessage({
+                message: `회원가입 실패: ${response.status} - ${response.message || '에러 발생'}`,
+                type: 'error'
+              });
+            }
         } catch (error) {
             if (error.response) {
                 setResultMessage({
@@ -149,10 +157,10 @@ function App() {
                                 </IconWrapper>
                                 <Input
                                     id="loginId"
-                                    name="id"
+                                    name="username"
                                     type="text"
                                     placeholder="아이디를 입력하세요"
-                                    value={loginData.id}
+                                    value={loginData.username}
                                     onChange={handleLoginChange}
                                 />
                             </InputWrapper>
@@ -193,10 +201,10 @@ function App() {
                                 </IconWrapper>
                                 <Input
                                     id="signupId"
-                                    name="id"
+                                    name="username"
                                     type="text"
                                     placeholder="아이디를 입력하세요"
-                                    value={signupData.id}
+                                    value={signupData.username}
                                     onChange={handleSignupChange}
                                 />
                             </InputWrapper>

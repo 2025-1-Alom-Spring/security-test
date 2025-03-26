@@ -78,31 +78,3 @@ baseAPI.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
-
-// 응답 인터셉터: 401 Unauthorized 발생 시 토큰 갱신 시도
-baseAPI.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (
-            error.response &&
-            error.response.status === 401 &&
-            !originalRequest._retry
-        ) {
-            originalRequest._retry = true;
-            console.warn('⚠️ JWT 토큰 만료 → 새 토큰을 가져오는 중...');
-            try {
-                await refreshJwtToken();
-                originalRequest.headers['Authorization'] = `Bearer ${jwtToken}`;
-                return baseAPI(originalRequest);
-            } catch (refreshError) {
-                console.error('❌ JWT 토큰 갱신 실패:', refreshError);
-                return Promise.reject(refreshError);
-            }
-        }
-        return Promise.reject(error);
-    }
-);
